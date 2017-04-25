@@ -49,16 +49,13 @@ main = mainWidget $ do
         greens = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
 
         colors = reds ++ blues ++ greens
-
         image = BS.pack colors
 
         imageWidth = boxWidth
-        -- imageHeight = ((length colors) `div` 4) `div` imageWidth
         imageHeight = (length colors `div` 4) `div` imageWidth
 
     -- convert image ByteString to a c style string and then to ImageData
     imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
-
     -- demonstrate the imageData is what we expect by displaying it.
     let canvasWidth = 300
         canvasHeight = 200
