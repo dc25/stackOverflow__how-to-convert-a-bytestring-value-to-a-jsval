@@ -57,6 +57,7 @@ main = mainWidget $ do
 
     -- convert image ByteString to a c style string and then to ImageData
     imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
+
     -- demonstrate the imageData is what we expect by displaying it.
     let canvasWidth = 300
         canvasHeight = 200
