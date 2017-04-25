@@ -47,10 +47,10 @@ main = mainWidget $ do
         boxDataLen = boxWidth*boxHeight*4
 
         reds = take boxDataLen $ concat $ repeat [0xff,0x00,0x00,0xff]
-        blues = take boxDataLen $ concat $ repeat [0x00,0xff,0x00,0xff]
-        greens = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
+        greens = take boxDataLen $ concat $ repeat [0x00,0xff,0x00,0xff]
+        blues = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
 
-        colors = reds ++ blues ++ greens
+        colors = reds ++ greens ++ blues
         image = BS.pack colors -- create a ByteString with the pixel data.
 
         imageWidth = boxWidth
