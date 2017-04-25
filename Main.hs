@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE JavaScriptFFI #-}
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 import Reflex.Dom
 import Data.Monoid ((<>))
@@ -11,7 +10,7 @@ import GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D (putImageData, fillRec
 import GHCJS.DOM.Types (CanvasStyle(..), CanvasRenderingContext2D(..), toJSString, castToHTMLCanvasElement, ImageData(..))
 import Foreign.Ptr (Ptr)
 import GHCJS.Types (JSVal)
-import GHCJS.Marshal.Pure
+import GHCJS.Marshal.Pure (pToJSVal)
 import GHCJS.Marshal (toJSVal)
 import Data.Map (Map)
 import Data.Text as T (Text, pack)
@@ -21,38 +20,28 @@ import Data.ByteString as BS (pack, useAsCStringLen)
 -- https://www.snip2code.com/Snippet/1032978/Simple-Canvas-Example/
 
 foreign import javascript unsafe 
-    -- Arguments
-    --    width  : JSNumber
-    --    height : JSNumber
-    --    pixels : Ptr a -- Pointer to a ByteString in the format below
-    --    length : JSNumber -- number of pixels
     "(function(){                                     \
         var width  = $1;                              \
         var height = $2;                              \
-        var length = $4;                                         \
-        var buffer = $3.u8.slice(0, length);                                         \
-        var pixels = new Uint8ClampedArray(buffer);    \
+        var length = $4;                              \
+        var buffer = $3.u8.slice(0, length);          \
+        var pixels = new Uint8ClampedArray(buffer);   \
         return new ImageData(pixels, width, height)   \
     })()" 
-    jsImageData :: forall a . JSVal -> JSVal -> Ptr a -> JSVal -> IO JSVal
+    jsImageData :: JSVal -> JSVal -> Ptr a -> JSVal -> IO JSVal
 
-newImageData :: Int -> Int -> (Ptr a, Int) -> IO JSVal
+-- friendlier front end to jsImageData
+newImageData :: Int -> Int -> (Ptr a, Int) -> IO ImageData
 newImageData width height (ptr, len) = 
-    jsImageData (pToJSVal width) (pToJSVal height) ptr (pToJSVal len)
+    ImageData <$> jsImageData (pToJSVal width) (pToJSVal height) ptr (pToJSVal len)
 
 canvasAttrs :: Int -> Int -> Map T.Text T.Text
 canvasAttrs w h =    ("width" =: (T.pack $ show w)) 
                   <> ("height" =: (T.pack $ show h))
 
 main = mainWidget $ do
-    let canvasWidth = 300
-        canvasHeight = 200
-
-        boxWidth = 50
+    let boxWidth = 50
         boxHeight = 30
-
-        imageWidth = boxWidth
-        imageHeight = boxHeight * 3
 
         reds = take (boxWidth*boxHeight*4) $ concat $ repeat [0xff,0x00,0x00,0xff]
         blues = take (boxWidth*boxHeight*4) $ concat $ repeat [0x00,0xff,0x00,0xff]
@@ -60,16 +49,24 @@ main = mainWidget $ do
 
         image = BS.pack $ reds ++ blues ++ greens
 
+        imageWidth = boxWidth
+        imageHeight = boxHeight * 3
+
+    -- convert image ByteString to a c style string and then to ImageData
+    imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
+
+    let canvasWidth = 300
+        canvasHeight = 200
+
     (el, _) <- elAttr' "canvas" (canvasAttrs canvasWidth canvasHeight) $ return ()
     let canvasElement = castToHTMLCanvasElement(_element_raw el)
         elementContext =  getContext canvasElement ("2d" :: [Char])
 
-    renderingContext <- fmap CanvasRenderingContext2D $ elementContext
-    imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
+    renderingContext <- fmap CanvasRenderingContext2D elementContext
     fillStyle <-  liftIO $ (fmap (Just . CanvasStyle) $ toJSVal $ toJSString ("grey" :: [Char]))
 
     setFillStyle renderingContext fillStyle
     fillRect renderingContext 0.0 0.0 (fromIntegral canvasWidth) (fromIntegral canvasHeight)
-    putImageData renderingContext (Just $ ImageData imageData) 100 20
+    putImageData renderingContext (Just imageData) 100 20
 
     return ()
