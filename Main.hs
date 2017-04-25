@@ -40,7 +40,7 @@ canvasAttrs w h =    ("width" =: (T.pack $ show w))
                   <> ("height" =: (T.pack $ show h))
 
 main = mainWidget $ do
-    let boxWidth = 50
+    let boxWidth = 100
         boxHeight = 30
 
         reds = take (boxWidth*boxHeight*4) $ concat $ repeat [0xff,0x00,0x00,0xff]
@@ -55,11 +55,12 @@ main = mainWidget $ do
     -- convert image ByteString to a c style string and then to ImageData
     imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
 
+    -- demonstrate the imageData is what we expect
     let canvasWidth = 300
         canvasHeight = 200
 
-    (el, _) <- elAttr' "canvas" (canvasAttrs canvasWidth canvasHeight) $ return ()
-    let canvasElement = castToHTMLCanvasElement(_element_raw el)
+    (element, _) <- elAttr' "canvas" (canvasAttrs canvasWidth canvasHeight) $ return ()
+    let canvasElement = castToHTMLCanvasElement(_element_raw element)
         elementContext =  getContext canvasElement ("2d" :: [Char])
 
     renderingContext <- fmap CanvasRenderingContext2D elementContext
