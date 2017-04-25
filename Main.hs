@@ -42,20 +42,24 @@ canvasAttrs w h =    ("width" =: (T.pack $ show w))
 main = mainWidget $ do
     let boxWidth = 100
         boxHeight = 30
+        boxDataLen = boxWidth*boxHeight*4
 
-        reds = take (boxWidth*boxHeight*4) $ concat $ repeat [0xff,0x00,0x00,0xff]
-        blues = take (boxWidth*boxHeight*4) $ concat $ repeat [0x00,0xff,0x00,0xff]
-        greens = take (boxWidth*boxHeight*4) $ concat $ repeat [0x00,0x00,0xff,0xff]
+        reds = take boxDataLen $ concat $ repeat [0xff,0x00,0x00,0xff]
+        blues = take boxDataLen $ concat $ repeat [0x00,0xff,0x00,0xff]
+        greens = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
 
-        image = BS.pack $ reds ++ blues ++ greens
+        colors = reds ++ blues ++ greens
+
+        image = BS.pack colors
 
         imageWidth = boxWidth
-        imageHeight = boxHeight * 3
+        -- imageHeight = ((length colors) `div` 4) `div` imageWidth
+        imageHeight = (length colors `div` 4) `div` imageWidth
 
     -- convert image ByteString to a c style string and then to ImageData
     imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
 
-    -- demonstrate the imageData is what we expect
+    -- demonstrate the imageData is what we expect by displaying it.
     let canvasWidth = 300
         canvasHeight = 200
 
@@ -68,6 +72,6 @@ main = mainWidget $ do
 
     setFillStyle renderingContext fillStyle
     fillRect renderingContext 0.0 0.0 (fromIntegral canvasWidth) (fromIntegral canvasHeight)
-    putImageData renderingContext (Just imageData) 100 20
+    putImageData renderingContext (Just imageData) 80 20
 
     return ()
