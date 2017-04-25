@@ -4,7 +4,7 @@
 
 import Reflex.Dom
 import Data.Monoid ((<>))
-import Control.Monad.IO.Class ( liftIO )
+import Control.Monad.IO.Class (liftIO)
 import GHCJS.DOM.HTMLCanvasElement (getContext)
 import GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D (putImageData, fillRect, setFillStyle)
 import GHCJS.DOM.Types (CanvasStyle(..), CanvasRenderingContext2D(..), toJSString, castToHTMLCanvasElement, ImageData(..))
@@ -16,6 +16,7 @@ import Data.Map (Map)
 import Data.Text as T (Text, pack)
 import Data.ByteString as BS (pack, useAsCStringLen)
 
+-- Code and techniques taken from these sites:
 -- http://lpaste.net/154691
 -- https://www.snip2code.com/Snippet/1032978/Simple-Canvas-Example/
 
