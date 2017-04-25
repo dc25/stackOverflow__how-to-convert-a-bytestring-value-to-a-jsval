@@ -14,7 +14,7 @@ import GHCJS.Marshal.Pure (pToJSVal)
 import GHCJS.Marshal (toJSVal)
 import Data.Map (Map)
 import Data.Text as T (Text, pack)
-import Data.ByteString as BS (pack, useAsCStringLen)
+import Data.ByteString as BS (ByteString, pack, useAsCStringLen)
 
 -- Some code and techniques taken from these sites:
 -- http://lpaste.net/154691
@@ -37,6 +37,11 @@ newImageData :: Int -> Int -> (Ptr a, Int) -> IO ImageData
 newImageData width height (ptr, len) = 
     ImageData <$> jsImageData (pToJSVal width) (pToJSVal height) ptr (pToJSVal len)
 
+-- friendlier front end to newImageData
+makeImageData :: Int -> Int -> ByteString -> IO ImageData
+makeImageData width height imageData = 
+    BS.useAsCStringLen imageData $ newImageData width height
+
 canvasAttrs :: Int -> Int -> Map T.Text T.Text
 canvasAttrs w h =    ("width" =: (T.pack $ show w)) 
                   <> ("height" =: (T.pack $ show h))
@@ -56,8 +61,7 @@ main = mainWidget $ do
         imageWidth = boxWidth
         imageHeight = (length colors `div` 4) `div` imageWidth
 
-    -- convert image ByteString to a c style string and then to ImageData
-    imageData <- liftIO $ BS.useAsCStringLen image $ newImageData imageWidth imageHeight 
+    imageData <- liftIO $ makeImageData imageWidth imageHeight image 
 
     -- demonstrate the imageData is what we expect by displaying it.
     let canvasWidth = 300
