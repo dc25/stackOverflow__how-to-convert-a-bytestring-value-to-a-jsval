@@ -20,6 +20,7 @@ import Data.ByteString as BS (pack, useAsCStringLen)
 -- http://lpaste.net/154691
 -- https://www.snip2code.com/Snippet/1032978/Simple-Canvas-Example/
 
+-- import inline Javascript code as Haskell function : jsImageData
 foreign import javascript unsafe 
     "(function(){                                     \
         var width  = $1;                              \
@@ -50,7 +51,7 @@ main = mainWidget $ do
         greens = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
 
         colors = reds ++ blues ++ greens
-        image = BS.pack colors
+        image = BS.pack colors -- create a ByteString with the pixel data.
 
         imageWidth = boxWidth
         imageHeight = (length colors `div` 4) `div` imageWidth
