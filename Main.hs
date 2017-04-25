@@ -16,7 +16,7 @@ import Data.Map (Map)
 import Data.Text as T (Text, pack)
 import Data.ByteString as BS (pack, useAsCStringLen)
 
--- Code and techniques taken from these sites:
+-- Some code and techniques taken from these sites:
 -- http://lpaste.net/154691
 -- https://www.snip2code.com/Snippet/1032978/Simple-Canvas-Example/
 
