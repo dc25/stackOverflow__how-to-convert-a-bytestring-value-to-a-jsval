@@ -5,12 +5,13 @@
 import Reflex.Dom
 import Data.Monoid ((<>))
 import Control.Monad.IO.Class (liftIO)
+import GHCJS.DOM.ImageData (newImageData)
 import GHCJS.DOM.HTMLCanvasElement (getContext)
 import GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D (putImageData)
-import GHCJS.DOM.Types (CanvasRenderingContext2D(..), castToHTMLCanvasElement, ImageData(..))
+import GHCJS.DOM.Types (CanvasRenderingContext2D(..), castToHTMLCanvasElement, Uint8ClampedArray(..))
 import Foreign.Ptr (Ptr)
 import GHCJS.Types (JSVal)
-import GHCJS.Marshal.Pure (pToJSVal)
+import GHCJS.Marshal.Pure (pFromJSVal, pToJSVal)
 import Data.Map (Map)
 import Data.Text as T (Text, pack)
 import Data.ByteString as BS (ByteString, pack, useAsCStringLen)
@@ -21,55 +22,47 @@ import Data.ByteString as BS (ByteString, pack, useAsCStringLen)
 
 -- import inline Javascript code as Haskell function : jsImageData
 foreign import javascript unsafe 
-    "(function(){                                     \
-        var width  = $1;                              \
-        var height = $2;                              \
-        var length = $4;                              \
-        var buffer = $3.u8.slice(0, length);          \
-        var pixels = new Uint8ClampedArray(buffer);   \
-        return new ImageData(pixels, width, height)   \
-    })()" 
-    jsImageData :: JSVal -> JSVal -> Ptr a -> JSVal -> IO JSVal
+    -- Arguments
+    --     pixels : Ptr a -- Pointer to a ByteString 
+    --     len    : JSVal -- Number of pixels
+    "(function(){ return new Uint8ClampedArray($1.u8.slice(0, $2)); })()" 
+    jsUint8ClampedArray :: Ptr a -> JSVal -> IO JSVal
 
--- friendlier front end to jsImageData
-newImageData :: Int -> Int -> (Ptr a, Int) -> IO ImageData
-newImageData width height (ptr, len) = 
-    ImageData <$> jsImageData (pToJSVal width) (pToJSVal height) ptr (pToJSVal len)
-
--- friendlier front end to newImageData
-makeImageData :: Int -> Int -> ByteString -> IO ImageData
-makeImageData width height imageData = 
-    BS.useAsCStringLen imageData $ newImageData width height
+-- takes pointer and length arguments as passed by useAsCStringLen
+newUint8ClampedArray :: (Ptr a, Int) -> IO Uint8ClampedArray
+newUint8ClampedArray (pixels, len) = 
+    pFromJSVal <$> jsUint8ClampedArray pixels (pToJSVal len)
 
 canvasAttrs :: Int -> Int -> Map T.Text T.Text
-canvasAttrs w h =    ("width" =: (T.pack $ show w)) 
-                  <> ("height" =: (T.pack $ show h))
+canvasAttrs w h =    ("width" =: T.pack (show w)) 
+                  <> ("height" =: T.pack (show h))
 
 main = mainWidget $ do
-    let boxWidth = 100
+    -- first, generate some test pixels
+    let boxWidth = 120
         boxHeight = 30
-        boxDataLen = boxWidth*boxHeight*4
+        boxDataLen = boxWidth*boxHeight*4 -- 4 bytes per pixel
 
         reds = take boxDataLen $ concat $ repeat [0xff,0x00,0x00,0xff]
         greens = take boxDataLen $ concat $ repeat [0x00,0xff,0x00,0xff]
         blues = take boxDataLen $ concat $ repeat [0x00,0x00,0xff,0xff]
 
-        colors = reds ++ greens ++ blues
-        image = BS.pack colors -- create a ByteString with the pixel data.
+        pixels = reds ++ greens ++ blues
+        image = BS.pack pixels -- create a ByteString with the pixel data.
 
-        imageWidth = boxWidth
-        imageHeight = (length colors `div` 4) `div` imageWidth
+    -- create Uint8ClampedArray representation of pixels
+    imageArray <- liftIO $ BS.useAsCStringLen image newUint8ClampedArray
 
-    imageData <- liftIO $ makeImageData imageWidth imageHeight image 
+    let imageWidth = boxWidth
+        imageHeight = (length pixels `div` 4) `div` imageWidth
+
+    -- use Uint8ClampedArray representation of pixels to create ImageData
+    imageData <- newImageData (Just imageArray) (fromIntegral imageWidth) (fromIntegral imageHeight)
 
     -- demonstrate the imageData is what we expect by displaying it.
-    let canvasWidth = 300
-        canvasHeight = 200
-
-    (element, _) <- elAttr' "canvas" (canvasAttrs canvasWidth canvasHeight) $ return ()
+    (element, _) <- elAttr' "canvas" (canvasAttrs 300 200) $ return ()
     let canvasElement = castToHTMLCanvasElement(_element_raw element)
-        elementContext =  getContext canvasElement ("2d" :: [Char])
+    elementContext <-  getContext canvasElement ("2d" :: String)
 
-    renderingContext <- fmap CanvasRenderingContext2D elementContext
-
+    let renderingContext = CanvasRenderingContext2D elementContext
     putImageData renderingContext (Just imageData) 80 20
