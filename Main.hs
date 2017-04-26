@@ -20,7 +20,7 @@ import Data.ByteString as BS (ByteString, pack, useAsCStringLen)
 -- http://lpaste.net/154691
 -- https://www.snip2code.com/Snippet/1032978/Simple-Canvas-Example/
 
--- import inline Javascript code as Haskell function : jsImageData
+-- import inline Javascript code as Haskell function : jsUint8ClampedArray
 foreign import javascript unsafe 
     -- Arguments
     --     pixels : Ptr a -- Pointer to a ByteString 
