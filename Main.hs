@@ -6,12 +6,11 @@ import Reflex.Dom
 import Data.Monoid ((<>))
 import Control.Monad.IO.Class (liftIO)
 import GHCJS.DOM.HTMLCanvasElement (getContext)
-import GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D (putImageData, fillRect, setFillStyle)
-import GHCJS.DOM.Types (CanvasStyle(..), CanvasRenderingContext2D(..), toJSString, castToHTMLCanvasElement, ImageData(..))
+import GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D (putImageData)
+import GHCJS.DOM.Types (CanvasRenderingContext2D(..), castToHTMLCanvasElement, ImageData(..))
 import Foreign.Ptr (Ptr)
 import GHCJS.Types (JSVal)
 import GHCJS.Marshal.Pure (pToJSVal)
-import GHCJS.Marshal (toJSVal)
 import Data.Map (Map)
 import Data.Text as T (Text, pack)
 import Data.ByteString as BS (ByteString, pack, useAsCStringLen)
@@ -72,10 +71,5 @@ main = mainWidget $ do
         elementContext =  getContext canvasElement ("2d" :: [Char])
 
     renderingContext <- fmap CanvasRenderingContext2D elementContext
-    fillStyle <-  liftIO $ (fmap (Just . CanvasStyle) $ toJSVal $ toJSString ("grey" :: [Char]))
 
-    setFillStyle renderingContext fillStyle
-    fillRect renderingContext 0.0 0.0 (fromIntegral canvasWidth) (fromIntegral canvasHeight)
     putImageData renderingContext (Just imageData) 80 20
-
-    return ()

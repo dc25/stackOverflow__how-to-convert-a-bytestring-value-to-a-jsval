@@ -1,22 +1,22 @@
 code size summary per package:
 
-base:                    357528
+base:                    354725
 bytestring-0.10.8.1-5wktHSR60zC2wTr02OpyVU:4432
 containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz:172341
 deepseq-1.4.2.0-47yvsc92PQF1rYmebWoAXZ:884
 dependent-map-0.2.4.0-JQogJkCWcm51zbhFvdN4TV:123295
 dependent-sum-0.3.2.2-7nS29TvovqDNS76jfcaer:12371
 ghc-prim:                17823
-ghcjs-base-0.2.0.0-D8NHjFR0nuJEBIdpJ8312j:18016
-ghcjs-dom-0.2.3.1-L0IRwwiUDix9xezZ47SisT:158986
+ghcjs-base-0.2.0.0-D8NHjFR0nuJEBIdpJ8312j:17787
+ghcjs-dom-0.2.3.1-L0IRwwiUDix9xezZ47SisT:151245
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA:11073
-integer-gmp:             15282
-main:                    23380
+integer-gmp:             14819
+main:                    19913
 prim-uniq-0.1.0.1-Lbg7Imujn019qkjLCx908j:2786
 primitive-0.6.1.0-PBvNfnj6B81wEvI5CBk0H:809
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN:1286
 reflex-0.5.0-AvoxeUts7Jf2q0UxCMqPFj:1167899
-reflex-dom-0.4-LrG6o2CPykBJyj87a21yza:664612
+reflex-dom-0.4-LrG6o2CPykBJyj87a21yza:664562
 text-1.2.2.1-6Pphv4bz3hHEAngNHxPNZe:515
 these-0.7.1-Jw1YCr04InZ1c0BLK9t9qc:864
 transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB:11531
@@ -50,14 +50,13 @@ base
     Foreign.Marshal.Alloc:              301
     Foreign.Marshal.Array:              1987
     Foreign.Storable:                   9380
-    GHC.Base:                           9347
+    GHC.Base:                           9119
     GHC.Conc.Sync:                      8239
     GHC.Enum:                           12165
     GHC.Err:                            546
     GHC.Exception:                      16380
     GHC.Fingerprint:                    1459
     GHC.Fingerprint.Type:               724
-    GHC.Float:                          2111
     GHC.Foreign:                        12172
     GHC.ForeignPtr:                     1679
     GHC.IO:                             3504
@@ -81,7 +80,7 @@ base
     GHC.MVar:                           174
     GHC.Num:                            2802
     GHC.Ptr:                            610
-    GHC.Real:                           11610
+    GHC.Real:                           11146
     GHC.STRef:                          620
     GHC.Show:                           8993
     GHC.Stack.CCS:                      3971
@@ -128,13 +127,13 @@ ghcjs-base-0.2.0.0-D8NHjFR0nuJEBIdpJ8312j
     Data.JSString.Internal.Fusion.Common:1492
     Data.JSString.Internal.Type:        422
     GHCJS.Marshal:                      4557
-    GHCJS.Marshal.Internal:             2060
+    GHCJS.Marshal.Internal:             1831
     GHCJS.Marshal.Pure:                 657
 
 ghcjs-dom-0.2.3.1-L0IRwwiUDix9xezZ47SisT
     GHCJS.DOM:                          7654
     GHCJS.DOM.EventM:                   2291
-    GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D:3736
+    GHCJS.DOM.JSFFI.Generated.CanvasRenderingContext2D:1560
     GHCJS.DOM.JSFFI.Generated.Document: 3505
     GHCJS.DOM.JSFFI.Generated.Element:  30982
     GHCJS.DOM.JSFFI.Generated.Event:    818
@@ -147,17 +146,17 @@ ghcjs-dom-0.2.3.1-L0IRwwiUDix9xezZ47SisT
     GHCJS.DOM.JSFFI.Generated.TouchEvent:2111
     GHCJS.DOM.JSFFI.Generated.TouchList:882
     GHCJS.DOM.JSFFI.Generated.Window:   1388
-    GHCJS.DOM.Types:                    93983
+    GHCJS.DOM.Types:                    88418
 
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA
     GHCJS.Prim:                         6758
     GHCJS.Prim.Internal:                4315
 
 integer-gmp
-    GHC.Integer.Type:                   15282
+    GHC.Integer.Type:                   14819
 
 main
-    Main:                               23380
+    Main:                               19913
 
 prim-uniq-0.1.0.1-Lbg7Imujn019qkjLCx908j
     Unsafe.Unique.Prim:                 1053
@@ -190,7 +189,7 @@ reflex-dom-0.4-LrG6o2CPykBJyj87a21yza
     Foreign.JavaScript.TH:              30044
     Reflex.Dom.Builder.Class:           19776
     Reflex.Dom.Builder.Class.Events:    139342
-    Reflex.Dom.Builder.Immediate:       376429
+    Reflex.Dom.Builder.Immediate:       376379
     Reflex.Dom.Class:                   133
     Reflex.Dom.Internal:                26945
     Reflex.Dom.Widget.Basic:            71943
@@ -208,5 +207,5 @@ transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB
 
 
 
-packed metadata: 558271
+packed metadata: 551679
 
